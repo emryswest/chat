@@ -19,23 +19,39 @@ Meteor.methods({
 
 if (Meteor.isServer) {
   // This code only runs on the server
-  Meteor.publish("messages", function (){
+  Meteor.publish("messages", function () {
     return Messages.find({}, {sort: {createdAt: -1}, limit: 5});
   });
 }
 
-/* scrolling mode */
+/* scrolling code */
 
 if (Meteor.isClient) {
-  // This code only runs ont eh client
+  // This code only runs on the client
   Meteor.subscribe("messages");
 
-  /* helper code */
+  Template.body.helpers({
+     recentMessages: function () {
+       return Messages.find({}, {sort: {createdAt: 1}});
+     },
+     /* unread message helper */
+   });
 
-  /* chat window scrolling */
+  /*chat window scrolling*/
 
-  /* events */
+  Template.body.events({
+    "submit .new-message": function (event) {
+      var text = event.target.text.value;
 
-  /* account config */
+      Meteor.call("sendMessage", text);
 
+      event.target.text.value = "";
+      event.preventDefault();
+    },
+
+    /* scroll event */
+
+  });
+
+  /*account config*/
 }
